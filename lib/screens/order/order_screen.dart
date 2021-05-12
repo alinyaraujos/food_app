@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:food_app/core/app_colors.dart';
 import 'package:food_app/core/app_image.dart';
 import 'package:food_app/core/app_text_styles.dart';
+import 'package:food_app/models/product.dart';
 import 'package:food_app/screens/order/widgets/around_amount_widget.dart';
 import 'package:food_app/screens/order/widgets/button_add_cart.dart';
 import 'package:food_app/screens/order/widgets/button_shadow_widget.dart';
@@ -9,6 +11,13 @@ import 'package:food_app/screens/order/widgets/size_product_widget.dart';
 import 'package:food_app/util/app_icons_icons.dart';
 
 class OrderScreen extends StatelessWidget {
+  Product product;
+
+  OrderScreen({
+    Key? key,
+    required this.product,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -39,7 +48,7 @@ class OrderScreen extends StatelessWidget {
                       padding:
                           const EdgeInsets.only(top: 10, left: 70, right: 70),
                       child: Text(
-                        "Burger",
+                        product.name,
                         style: AppTextStyles.titleSemiBold,
                       ),
                     ),
@@ -47,12 +56,12 @@ class OrderScreen extends StatelessWidget {
                       padding:
                           const EdgeInsets.only(top: 10, left: 70, right: 70),
                       child: Text(
-                        "description",
+                        product.description,
                         style: AppTextStyles.body,
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    Image.asset(AppImage.beefBurger),
+                    Image.asset(product.imageUrl),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Row(
@@ -135,7 +144,7 @@ class OrderScreen extends StatelessWidget {
                                 style: AppTextStyles.heading,
                               ),
                               Text(
-                                "R\$ 39.00",
+                                "R\$ ${product.price}",
                                 style: AppTextStyles.letterAmount,
                               ),
                             ],

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:food_app/core/app_image.dart';
 import 'package:food_app/core/app_text_styles.dart';
+import 'package:food_app/models/product.dart';
+import 'package:food_app/screens/home/home_controller.dart';
 import 'package:food_app/screens/home/widgets/card_category_widget.dart';
 import 'package:food_app/screens/home/widgets/card_product_widget.dart';
 import 'package:food_app/screens/home/widgets/search_widget.dart';
@@ -36,47 +38,70 @@ class HomeScreen extends StatelessWidget {
 
   final productlist = {
     "burgers": [
-      {
-        "name": "Burgers",
-        "price": 3.4,
-        "description":
+      Product(
+        name: "Burguer X salada",
+        description:
             "A signature flame-grilled chicken patty topped with smoked beef",
-        "imageUrl": AppImage.beefBurger,
-      },
-      {
-        "name": "Burgers",
-        "price": 3.4,
-        "description":
+        price: 16.8,
+        imageUrl: AppImage.beefBurger,
+      ),
+      Product(
+        name: "Burguer X Catupiry",
+        description:
             "A signature flame-grilled chicken patty topped with smoked beef",
-        "imageUrl": AppImage.beefBurger,
-      },
-      {
-        "name": "Burgers",
-        "price": 3.4,
-        "description":
+        price: 10.5,
+        imageUrl: AppImage.beefBurger,
+      ),
+      Product(
+        name: "Burguer Big",
+        description:
             "A signature flame-grilled chicken patty topped with smoked beef",
-        "imageUrl": AppImage.beefBurger,
-      }
+        price: 20.8,
+        imageUrl: AppImage.beefBurger,
+      ),
     ],
     "pizza": [
-      {
-        "name": "Pizza G Portuguesa",
-        "price": 60,
-        "description":
+      Product(
+        name: "Pizza G Portuguesa",
+        description:
             "A signature flame-grilled chicken patty topped with smoked beef",
-        "imageUrl": AppImage.pizza,
-      },
+        price: 60.8,
+        imageUrl: AppImage.pizza,
+      ),
+      Product(
+        name: "Pizza G de chocolate",
+        description:
+            "A signature flame-grilled chicken patty topped with smoked beef",
+        price: 75.8,
+        imageUrl: AppImage.pizza,
+      ),
     ],
     "bolos": [
-      {
-        "name": "Bolo de chocolate",
-        "price": 45,
-        "description":
+      Product(
+        name: "Bolo de morango",
+        description:
             "A signature flame-grilled chicken patty topped with smoked beef",
-        "imageUrl": AppImage.cake,
-      }
+        price: 150.8,
+        imageUrl: AppImage.cake,
+      ),
+      Product(
+        name: "Bolo de morango",
+        description:
+            "A signature flame-grilled chicken patty topped with smoked beef",
+        price: 150.8,
+        imageUrl: AppImage.cake,
+      ),
+      Product(
+        name: "Bolo de morango",
+        description:
+            "A signature flame-grilled chicken patty topped with smoked beef",
+        price: 150.8,
+        imageUrl: AppImage.cake,
+      ),
     ],
   };
+
+  HomeController homeController = HomeController();
 
   @override
   Widget build(BuildContext context) {
@@ -111,10 +136,16 @@ class HomeScreen extends StatelessWidget {
                   padding: EdgeInsets.only(
                     left: index == 0 ? 20 : 0,
                   ),
-                  child: CardCategoryWidget(
-                    title: categoryList[index]["title"].toString(),
-                    image: categoryList[index]["image"].toString(),
-                    selected: index == 0 ? true : false,
+                  child: ValueListenableBuilder(
+                    valueListenable: homeController.selectedCategoryNotifier,
+                    builder: (context, value, _) => CardCategoryWidget(
+                      title: categoryList[index]["title"].toString(),
+                      image: categoryList[index]["image"].toString(),
+                      selected: index == value,
+                      onTap: () {
+                        homeController.selectedCategory = index;
+                      },
+                    ),
                   ),
                 );
               },
@@ -142,24 +173,34 @@ class HomeScreen extends StatelessWidget {
           SizedBox(
             height: 28,
           ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: productlist["burgers"]!.length,
-            itemBuilder: (context, index) {
-              var product = productlist["burgers"]![index];
-              return CardProductWidget(
-                title: product["name"].toString(),
-                description: product["description"].toString(),
-                image: product["imageUrl"].toString(),
-                price: double.parse(product["price"].toString()),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => OrderScreen(),
-                    ),
+          ValueListenableBuilder(
+            valueListenable: homeController.selectedCategoryNotifier,
+            builder: (context, int value, _) {
+              String? categoryKey = categoryList[value]["title"]!.toLowerCase();
+
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: productlist[categoryKey]!.length,
+                itemBuilder: (context, index) {
+                  Product product = productlist[categoryKey]![index];
+
+                  return CardProductWidget(
+                    title: product.name,
+                    description: product.description,
+                    image: product.imageUrl,
+                    price: product.price,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => OrderScreen(
+                            product: product,
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               );
