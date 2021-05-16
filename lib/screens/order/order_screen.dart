@@ -4,6 +4,7 @@ import 'package:food_app/core/app_colors.dart';
 import 'package:food_app/core/app_image.dart';
 import 'package:food_app/core/app_text_styles.dart';
 import 'package:food_app/models/product.dart';
+import 'package:food_app/screens/order/order_controller.dart';
 import 'package:food_app/screens/order/widgets/around_amount_widget.dart';
 import 'package:food_app/screens/order/widgets/button_add_cart.dart';
 import 'package:food_app/screens/order/widgets/button_shadow_widget.dart';
@@ -17,6 +18,8 @@ class OrderScreen extends StatelessWidget {
     Key? key,
     required this.product,
   }) : super(key: key);
+
+  OrderController controller = OrderController();
 
   @override
   Widget build(BuildContext context) {
@@ -64,59 +67,75 @@ class OrderScreen extends StatelessWidget {
                     Image.asset(product.imageUrl),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizeProductWidget(
-                            title: "P",
-                            selected: true,
-                            onTap: () {
-                              print("P");
-                            },
-                          ),
-                          SizeProductWidget(
-                            title: "M",
-                            selected: false,
-                            onTap: () {
-                              print("M");
-                            },
-                          ),
-                          SizeProductWidget(
-                            title: "G",
-                            selected: false,
-                            onTap: () {
-                              print("G");
-                            },
-                          ),
-                        ],
+                      child: ValueListenableBuilder(
+                        valueListenable: controller.sizeNotifier,
+                        builder: (context, value, _) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizeProductWidget(
+                                title: "P",
+                                selected: value == Sizes.P,
+                                onTap: () {
+                                  print("P");
+                                  controller.size = Sizes.P;
+                                },
+                              ),
+                              SizeProductWidget(
+                                title: "M",
+                                selected: value == Sizes.M,
+                                onTap: () {
+                                  print("M");
+                                  controller.size = Sizes.M;
+                                },
+                              ),
+                              SizeProductWidget(
+                                title: "G",
+                                selected: value == Sizes.G,
+                                onTap: () {
+                                  print("G");
+                                  controller.size = Sizes.G;
+                                },
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          AroundAmountWidget(
-                            icon: Icons.remove,
-                            onTap: () {
-                              print("remove");
-                            },
-                          ),
-                          SizedBox(width: 50),
-                          Text(
-                            "5",
-                            style: AppTextStyles.letterAmount,
-                          ),
-                          SizedBox(width: 50),
-                          AroundAmountWidget(
-                            icon: Icons.add,
-                            onTap: () {
-                              print("add");
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
+                        padding: const EdgeInsets.only(top: 16),
+                        child: ValueListenableBuilder(
+                          valueListenable: controller.quantityNotifier,
+                          builder: (context, value, _) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                AroundAmountWidget(
+                                  icon: Icons.remove,
+                                  onTap: () {
+                                    print("remove");
+                                    if (controller.quantity > 1) {
+                                      controller.quantity -= 1;
+                                    }
+                                  },
+                                ),
+                                SizedBox(width: 50),
+                                Text(
+                                  "${controller.quantity}",
+                                  style: AppTextStyles.letterAmount,
+                                ),
+                                SizedBox(width: 50),
+                                AroundAmountWidget(
+                                  icon: Icons.add,
+                                  onTap: () {
+                                    print("add");
+                                    controller.quantity += 1;
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        )),
                     SizedBox(
                       height: 80,
                     )
