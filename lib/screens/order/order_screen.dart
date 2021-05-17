@@ -4,12 +4,15 @@ import 'package:food_app/core/app_colors.dart';
 import 'package:food_app/core/app_image.dart';
 import 'package:food_app/core/app_text_styles.dart';
 import 'package:food_app/models/product.dart';
+import 'package:food_app/page_view/pages_controller.dart';
+import 'package:food_app/screens/cart/cart_controller.dart';
 import 'package:food_app/screens/order/order_controller.dart';
 import 'package:food_app/screens/order/widgets/around_amount_widget.dart';
 import 'package:food_app/screens/order/widgets/button_add_cart.dart';
 import 'package:food_app/screens/order/widgets/button_shadow_widget.dart';
 import 'package:food_app/screens/order/widgets/size_product_widget.dart';
 import 'package:food_app/util/app_icons_icons.dart';
+import 'package:provider/provider.dart';
 
 class OrderScreen extends StatelessWidget {
   Product product;
@@ -172,7 +175,18 @@ class OrderScreen extends StatelessWidget {
                       ),
                       Expanded(
                         child: ButtonAddCart(
-                          onTap: () {},
+                          onTap: () {
+                            Provider.of<CartController>(context, listen: false)
+                                .addProduct(
+                              product: product,
+                              quantity: controller.quantity,
+                            );
+
+                            Navigator.pop(context);
+                            Provider.of<PagesController>(context, listen: false)
+                                .pageController
+                                .jumpToPage(2);
+                          },
                         ),
                       )
                     ],
